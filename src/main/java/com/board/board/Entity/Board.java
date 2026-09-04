@@ -2,6 +2,11 @@ package com.board.board.Entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerator;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,8 +18,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "boards")
 public class Board {
   
@@ -30,9 +37,11 @@ public class Board {
 
   private String color="#dddddd";
 
-  private boolean is_shared = false;
+  @Column(name = "is_shared")
+  private boolean isShared = false;
 
-  private boolean is_archived = false;
+  @Column(name = "is_archived")
+  private boolean isArchived = false;
 
   private LocalDate createdAt;
 
@@ -40,7 +49,10 @@ public class Board {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
+  @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class , property = "id")
+  @JsonIdentityReference(alwaysAsId = true)
   private User user;
+  
 
   @PrePersist
   protected void onCreate() {
