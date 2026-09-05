@@ -1,6 +1,7 @@
 package com.board.board.Entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -52,7 +53,7 @@ public class User {
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonIgnore
-  private List<Board> boards;
+  private List<Board> boards = new ArrayList<>();
 
 
 

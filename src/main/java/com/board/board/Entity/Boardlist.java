@@ -1,16 +1,13 @@
 package com.board.board.Entity;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,7 +16,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -27,42 +23,39 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "boards")
-public class Board {
-  
+@Table(name = "lists")
+public class Boardlist {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "slug", unique = true)
-  private String slug;
-
   @Column(nullable = false)
-  private String name;
+  private String title;
 
-  private String color="#dddddd";
-
-  @Column(name = "is_shared")
-  private boolean isShared = false;
-
-  @Column(name = "is_archived")
-  private boolean isArchived = false;
-
-  private LocalDate createdAt;
-
-  private LocalDate updatedAt;
+  private String color = "#dddddd";
+  private boolean collapsed = false;
+  private int position = 0;
+  private boolean archived = false;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class , property = "id")
+  @JoinColumn(name = "board_id", nullable = false)
+  @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
   @JsonIdentityReference(alwaysAsId = true)
-  private User user;
+  private Board board;
+
+  @JsonProperty("board")
+  public void setBoardById(Long boardId) {
+      if (boardId != null) {
+          this.board = new Board();
+          this.board.setId(boardId);
+      }
+  }
 
 
-  @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
-  @JsonIgnore
-  private List<Boardlist> lists = new ArrayList<>();
-  
+
+  private LocalDate createdAt;
+  private LocalDate updatedAt;
+
 
   @PrePersist
   protected void onCreate() {
@@ -74,5 +67,6 @@ public class Board {
   protected void onUpdate(){
     this.updatedAt = LocalDate.now();
   }
+
 
 }
